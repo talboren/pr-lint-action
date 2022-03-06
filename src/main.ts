@@ -85,22 +85,13 @@ async function dismissReview(pullRequest: {
         alreadyRequiredChanges(review.state)
       ) {
         core.debug(`Already required changes`);
-        if (review.state === "COMMENTED") {
-          octokit.rest.issues.createComment({
-            owner: pullRequest.owner,
-            repo: pullRequest.repo,
-            issue_number: pullRequest.number,
-            body: onSucceededRegexDismissReviewComment,
-          });
-        } else {
-          octokit.rest.pulls.dismissReview({
-            owner: pullRequest.owner,
-            repo: pullRequest.repo,
-            pull_number: pullRequest.number,
-            review_id: review.id,
-            message: onSucceededRegexDismissReviewComment,
-          });
-        }
+        octokit.rest.pulls.dismissReview({
+          owner: pullRequest.owner,
+          repo: pullRequest.repo,
+          pull_number: pullRequest.number,
+          review_id: review.id,
+          message: onSucceededRegexDismissReviewComment,
+        });
       }
     }
   );
@@ -116,7 +107,7 @@ function alreadyRequiredChanges(state: string) {
   // If on-failed-regex-request-changes is set to be true state will be CHANGES_REQUESTED
   // otherwise the bot will just comment and the state will be COMMENTED.
   const requiredChanges =
-    state === "CHANGES_REQUESTED" || state === "COMMENTED";
+    state === "CHANGES_REQUESTED";
   core.debug(
     `alreadyRequiredChanges output: ${requiredChanges} (state is: ${state})`
   );
